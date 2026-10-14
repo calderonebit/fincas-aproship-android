@@ -11,14 +11,18 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Descomprimir el código
         run: |
           if [ -f FincasAPROSHIP_Android_codigo.zip ]; then unzip -q -o FincasAPROSHIP_Android_codigo.zip; fi
           if [ -d fincas-android ]; then echo "RAIZ=fincas-android" >> $GITHUB_ENV; else echo "RAIZ=." >> $GITHUB_ENV; fi
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '17' }
-      - uses: android-actions/setup-android@v3
+      # El SDK de Android ya viene instalado en las máquinas de GitHub (ANDROID_HOME)
+      - name: Revisar SDK de Android
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "sdk.dir=$ANDROID_HOME" > "$RAIZ/local.properties"
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.11.1' }
       - name: Llave de firma
