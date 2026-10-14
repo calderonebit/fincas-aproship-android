@@ -1,0 +1,46 @@
+name: Construir APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Descomprimir el código
+        run: |
+          if [ -f FincasAPROSHIP_Android_codigo.zip ]; then unzip -q -o FincasAPROSHIP_Android_codigo.zip; fi
+          if [ -d fincas-android ]; then echo "RAIZ=fincas-android" >> $GITHUB_ENV; else echo "RAIZ=." >> $GITHUB_ENV; fi
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.11.1' }
+      - name: Llave de firma
+        env:
+          JKS: ${{ secrets.FIRMA_JKS_BASE64 }}
+        run: |
+          if [ -z "$JKS" ]; then echo "::error::Falta el secreto FIRMA_JKS_BASE64 (Settings > Secrets and variables > Actions)"; exit 1; fi
+          echo "$JKS" | base64 -d > "$RAIZ/aproship.jks"
+      - name: Construir
+        working-directory: ${{ env.RAIZ }}
+        env:
+          FIRMA_ARCHIVO: aproship.jks
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
+          FIRMA_ALIAS: aproship
+          VERSION_CODE: ${{ github.run_number }}
+        run: gradle :app:assembleRelease --no-daemon
+      - run: cp "$RAIZ/app/build/outputs/apk/release/app-release.apk" FincasAPROSHIP.apk
+      - uses: actions/upload-artifact@v4
+        with: { name: FincasAPROSHIP, path: FincasAPROSHIP.apk }
+      - name: Publicar descarga
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Fincas APROSHIP 1.0.${{ github.run_number }}
+          files: FincasAPROSHIP.apk
