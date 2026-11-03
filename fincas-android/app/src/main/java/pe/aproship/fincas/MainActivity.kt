@@ -306,12 +306,12 @@ class MainActivity : Activity() {
            para que no se pierda aunque se cierre la app, se apague el celular o se borren los datos del navegador */
         @JavascriptInterface fun guardarBorrador(clave: String, json: String) {
             if (clave.length > 80 || json.length > 2_000_000) return
-            this@MainActivity.getSharedPreferences("borradores", Context.MODE_PRIVATE).edit().putString(clave, json).commit()
+            this@MainActivity.getSharedPreferences("borradores", Context.MODE_PRIVATE).edit().putString(clave, json).apply()   // en segundo plano: no traba la pantalla
         }
         @JavascriptInterface fun leerBorrador(clave: String): String =
             this@MainActivity.getSharedPreferences("borradores", Context.MODE_PRIVATE).getString(clave, "") ?: ""
         @JavascriptInterface fun borrarBorrador(clave: String) {
-            this@MainActivity.getSharedPreferences("borradores", Context.MODE_PRIVATE).edit().remove(clave).commit()
+            this@MainActivity.getSharedPreferences("borradores", Context.MODE_PRIVATE).edit().remove(clave).apply()
         }
 
         /* Mientras se recorre el borde, la pantalla no se apaga: con la pantalla bloqueada el GPS deja de tomar puntos */
