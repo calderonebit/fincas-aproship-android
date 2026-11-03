@@ -322,6 +322,11 @@ class MainActivity : Activity() {
             }
         }
 
+        /* Desde la pantalla "Sin conexión": abre la toma de puntos guardada en el teléfono */
+        @JavascriptInterface fun abrirCaptura() {
+            runOnUiThread { web.loadUrl("$servidor/captura") }
+        }
+
         @JavascriptInterface fun reintentar() {
             runOnUiThread { web.loadUrl(urlFallida ?: servidor) }
         }
