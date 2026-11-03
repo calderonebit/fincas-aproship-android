@@ -1,5 +1,11 @@
 # Novedades de Fincas APROSHIP
 
+## 1.0.9 (03/11/2026)
+- Finca = terreno total; parcela = área de café. Cada finca muestra terreno total, área con café, área sin café y el porcentaje.
+- El área de la parcela es obligatoria: el teléfono no sube una parcela sin área y avisa qué falta.
+- Al tomar puntos se elige «¿Qué vas a medir?»: terreno total de la finca o área de café de una parcela.
+- Sin conexión: botón para abrir la toma de puntos desde la pantalla de aviso.
+
 ## 1.0.8 (03/11/2026)
 - Más rápida: al recorrer el lindero la copia de seguridad se guarda en segundo plano y la pantalla ya no se traba.
 - Con señal débil muestra la copia guardada a los 3 segundos (antes 8) y el inicio responde desde el primer toque.
