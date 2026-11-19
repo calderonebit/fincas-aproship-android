@@ -1,5 +1,10 @@
 # Novedades de Fincas APROSHIP
 
+## 1.0.10 (18/11/2026)
+- El diseño se actualiza solo: al abrir la app pide al servidor las pantallas y estilos más recientes, y al instalar una versión nueva borra la copia vieja (ya no sale descuadrado). Los registros sin señal y los mapas guardados se conservan.
+- Germinador en 4 etapas con dibujos: germina, emerge, fósforo y chapola. En Ajustes eliges si repicas en fósforo o en chapola, y el calendario se acomoda.
+- Vivero y germinador: porcentaje de avance, fecha tentativa de repique y de salida a campo, marcar labores como hechas (descuenta del inventario), medir pares de hojas y altura, y aviso diario de riego según la lluvia.
+
 ## 1.0.9 (03/11/2026)
 - Finca = terreno total; parcela = área de café. Cada finca muestra terreno total, área con café, área sin café y el porcentaje.
 - El área de la parcela es obligatoria: el teléfono no sube una parcela sin área y avisa qué falta.
