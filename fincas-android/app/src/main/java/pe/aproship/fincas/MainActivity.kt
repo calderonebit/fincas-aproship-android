@@ -45,6 +45,8 @@ class MainActivity : Activity() {
     private var fotoUri: Uri? = null
     private var ubicacionPendiente: Pair<String, GeolocationPermissions.Callback>? = null
     private var urlFallida: String? = null
+    private var disenoRevisado = false // en cada arranque se pide el diseño más reciente una sola vez
+    private var versionNueva = false   // la app se acaba de actualizar: se borra la copia vieja del diseño
 
     companion object {
         private const val PEDIR_ARCHIVO = 10
@@ -88,6 +90,14 @@ class MainActivity : Activity() {
         web.webViewClient = Cliente()
         web.webChromeClient = Navegador()
         web.setDownloadListener { url, ua, disposicion, mime, _ -> descargar(url, ua, disposicion, mime) }
+
+        // App recién actualizada: borra la copia vieja de pantallas y estilos (no toca los registros sin señal ni los mapas)
+        val prefs = getSharedPreferences("app", Context.MODE_PRIVATE)
+        if (prefs.getInt("version_vista", 0) != BuildConfig.VERSION_CODE) {
+            web.clearCache(true)
+            versionNueva = true
+            prefs.edit().putInt("version_vista", BuildConfig.VERSION_CODE).apply()
+        }
 
         if (estado != null) web.restoreState(estado)
         else web.loadUrl(destino(intent) ?: servidor)
@@ -153,6 +163,13 @@ class MainActivity : Activity() {
 
         override fun onPageFinished(v: WebView, url: String) {
             CookieManager.getInstance().flush()
+            if (!disenoRevisado && Uri.parse(url).host == host) {
+                disenoRevisado = true
+                // Pide al servidor la última versión del diseño; tras una actualización de la app borra la copia vieja y recarga
+                val limpiar = if (versionNueva) "caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x.indexOf('fincas-v')===0}).map(function(x){return caches.delete(x)}))}).then(function(){location.reload()});" else ""
+                v.evaluateJavascript("(function(){try{if(navigator.serviceWorker)navigator.serviceWorker.getRegistration().then(function(r){if(r)r.update()});$limpiar}catch(e){}})()", null)
+                versionNueva = false
+            }
         }
     }
 
